@@ -9,17 +9,16 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class ClientApp {
+public class ClientNetworkHandler {
     private Path repPath = Paths.get("ClientRepository");
     private SocketChannel channel;
     private static final String HOST = "localhost";
     private static final int PORT = 8189;
 
-    public ClientApp() {
+    public ClientNetworkHandler() {
         new Thread(() -> {
             EventLoopGroup mainG = new NioEventLoopGroup();
             try {
@@ -32,7 +31,8 @@ public class ClientApp {
                                 channel = socketChannel;
                                 socketChannel.pipeline().addLast(
                                         new ObjectEncoder(),
-                                        new ObjectDecoder(150*1024*1024,ClassResolvers.cacheDisabled(null))
+                                        new ObjectDecoder(150*1024*1024,ClassResolvers.cacheDisabled(null)),
+                                        new ClientHandler()
                                 );
                             }
                         });
@@ -47,18 +47,11 @@ public class ClientApp {
         }).start();
     }
 
-    public void fileRequest (String fileName) {
-        channel.writeAndFlush(new FileRequest(fileName));
+    public Path getRepPath() {
+        return repPath;
     }
 
-    public void sendFile(String fileName) {
-        Path path = repPath.resolve(fileName);
-        try {
-            channel.writeAndFlush(new SendingFile(path));
-            System.out.println("Файл отправлен");
-        } catch (IOException e) {
-            System.out.println("Такого файла не существует!");
-        }
-
+    public SocketChannel getChannel() {
+        return channel;
     }
 }

@@ -18,7 +18,6 @@ public class NettyCloudServer {
             serverBootstrap.group(mainGroup, secondaryGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
-
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(

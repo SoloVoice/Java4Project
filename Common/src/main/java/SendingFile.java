@@ -4,6 +4,8 @@ import java.nio.file.Path;
 
 
 public class SendingFile extends CanBeSerializable {
+    private int parts;
+    private int currentPart;
     private String fileName;
     private byte[] data;
 
